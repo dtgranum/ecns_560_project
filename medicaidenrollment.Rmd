@@ -1,3 +1,0 @@
-```{r}
-enrollment = read.csv("MajorEligibilityGroup_monthly.csv")
-```
