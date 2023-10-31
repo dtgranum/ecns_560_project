@@ -10,14 +10,14 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 
-```{r cars}
+```{r}
 library(readxl)
 raw_PSID <- read_excel("J325858.xlsx")
+```
 
+```{r}
 library(tidyverse)
-PSID <- raw_PSID
-
-PSID |>
+renamed_PSID <- raw_PSID |>
   rename(
     "2005_release_num"=ER25001, 
     "2005_interview_id"=ER25002,     
@@ -105,6 +105,20 @@ PSID |>
     "2021_attendance"=ER81422,      
     "2021_income"=ER81775
   )
+```
+
+
+```{r}
+tidy_PSID <- renamed_PSID |>
+  pivot_longer(cols=c("2005_income", "2007_income", "2009_income", "2011_income", "2013_income", "2015_income", "2017_income", "2019_income", "2021_income"), names_to="year1", values_to="income") |>
+  pivot_longer(cols=c("2005_donations", "2007_donations", "2009_donations", "2011_donations", "2013_donations", "2015_donations", "2017_donations", "2019_donations", "2021_donations"), names_to="year2", values_to="donations")
 
 ```
 
+```{r}
+library(ggplot2)
+library(skimr)
+skim(tidy_PSID$donations)
+ggplot(tidy_PSID, aes(donations)) + geom_histogram()
+ggplot(tidy_PSID, aes(income, donations)) + geom_point()
+```
