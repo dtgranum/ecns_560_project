@@ -9,7 +9,7 @@ enrollment$State <- str_replace_all(enrollment$State, rep_states)
 clean_enrollment <- subset(enrollment, select = -c(Total.VIII.Group.Newly.Eligible.Enrollees:Updated.Month, Enrollment.Month, Notes))
 
 # variable name cleaning
-clean_enrollment |>
+clean_enrollment = clean_enrollment |>
   rename(
     medicaid_enrollees=Total.Medicaid.Enrollees,
     expanded_enrollees=Total.VIII.Group.Enrollees,
