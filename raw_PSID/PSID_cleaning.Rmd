@@ -118,6 +118,8 @@ tidy_PSID <- renamed_PSID |>
 
 tidy_PSID$year <- sub("_income", "", tidy_PSID$year)
 
+# merge datasets
+final_data <- merge(tidy_PSID, clean_enrollment, by=c("state","year"))
 ```
 
 ```{r}
