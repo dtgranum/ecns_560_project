@@ -11,8 +11,8 @@ clean_enrollment <- subset(enrollment, select = -c(Total.VIII.Group.Newly.Eligib
 # variable name cleaning
 clean_enrollment |>
   rename(
-    'medicaid_enrollees'='Total.Medicaid.Enrollees', 
-    'expanded_enrollees'='Total.VIII.Group.Enrollees',
-    'state'='State',
-    'year'='Enrollment.Year'
+    medicaid_enrollees=Total.Medicaid.Enrollees,
+    expanded_enrollees=Total.VIII.Group.Enrollees,
+    state=State,
+    year=Enrollment.Year
   )
