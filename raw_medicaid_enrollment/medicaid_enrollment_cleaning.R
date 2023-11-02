@@ -6,12 +6,13 @@ rep_states = c('Alabama'='1', 'Arizona'='2', 'Arkansas'='3', 'California'='4', '
 enrollment$State <- str_replace_all(enrollment$State, rep_states)
 
 # delete extraneous columns
-clean_enrollment <- subset(enrollment, select = -c(Total.VIII.Group.Newly.Eligible.Enrollees:Notes))
+clean_enrollment <- subset(enrollment, select = -c(Total.VIII.Group.Newly.Eligible.Enrollees:Updated.Month, Enrollment.Month, Notes))
 
 # variable name cleaning
 clean_enrollment |>
   rename(
     'medicaid_enrollees'='Total.Medicaid.Enrollees', 
     'expanded_enrollees'='Total.VIII.Group.Enrollees',
-    'state'='State'
+    'state'='State',
+    'year'='Enrollment.Year'
   )
