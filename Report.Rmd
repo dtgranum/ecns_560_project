@@ -45,6 +45,29 @@ We find that religious affiliation, attendance at religious events, and donation
 We also find that income and donations to religious organizations as well as income and attendance at religious events have a weak negative correlation.
 
 ```{r echo=FALSE, out.width = "50%", fig.align = "center"}
+knitr::include_graphics("output/attendancehistogram.png")
+```
+```{r echo=FALSE, out.width = "50%", fig.align = "center"}
+knitr::include_graphics("output/donationshistogram.png")
+```
+
+```{r echo=FALSE, out.width = "50%", fig.align = "center"}
 knitr::include_graphics("output/affiliationtime.png")
 ```
+```{r echo=FALSE, out.width = "50%", fig.align = "center"}
+knitr::include_graphics("output/year_meanincome.png")
+```
+```{r echo=FALSE, out.width = "50%", fig.align = "center"}
+knitr::include_graphics("output/year_meanattendance.png")
+```
+
+
+
+```{r echo=FALSE, out.width = "50%", fig.align = "center"}
+knitr::include_graphics("output/incomeattendance.png")
+```
+```{r echo=FALSE, out.width = "50%", fig.align = "center"}
+knitr::include_graphics("output/incomedonations.png")
+```
+
 
