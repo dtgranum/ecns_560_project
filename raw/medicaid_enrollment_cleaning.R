@@ -16,3 +16,7 @@ clean_enrollment = clean_enrollment |>
     state=State,
     year=Enrollment.Year
   )
+
+# create dummy variable indicating medicaid expansion
+clean_enrollment$expansion <- ifelse(clean_enrollment$expanded_enrollees > 0, 1, 0)
+small_enrollment <- subset(clean_enrollment, select=c("state","year","expansion"))

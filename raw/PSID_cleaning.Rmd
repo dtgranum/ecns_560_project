@@ -112,14 +112,31 @@ renamed_PSID <- raw_PSID |>
 ```{r}
 # change from wide to tidy format
 tidy_PSID <- renamed_PSID |>
-  pivot_longer(cols=c("2005_income", "2007_income", "2009_income", "2011_income", "2013_income", "2015_income", "2017_income", "2019_income", "2021_income"), names_to="year", values_to="income") |>
-  pivot_longer(cols=c("2005_donations", "2007_donations", "2009_donations", "2011_donations", "2013_donations", "2015_donations", "2017_donations", "2019_donations", "2021_donations"), names_to="year2", values_to="donations") |>
+  pivot_longer(cols=c("2005_release_num", "2007_release_num", "2009_release_num", "2011_release_num", "2013_release_num", "2015_release_num", "2017_release_num", "2019_release_num", "2021_release_num"), names_to="year4", values_to="release_num") |>
+  pivot_longer(cols=c("2005_interview_id", "2007_interview_id", "2009_interview_id", "2011_interview_id", "2013_interview_id", "2015_interview_id", "2017_interview_id", "2019_interview_id", "2021_interview_id"), names_to="year5", values_to="interview_id") |>
+  pivot_longer(cols=c("2005_current_state", "2007_current_state", "2009_current_state", "2011_current_state", "2013_current_state", "2015_current_state", "2017_current_state", "2019_current_state", "2021_current_state"), names_to="year6", values_to="current_state") 
+
+
+tidy_PSID <- tidy_PSID |>
+  pivot_longer(cols=c("2005_family_id", "2007_family_id", "2009_family_id", "2011_family_id", "2013_family_id", "2015_family_id", "2017_family_id", "2019_family_id", "2021_family_id"), names_to="year7", values_to="family_id") |>
+  pivot_longer(cols=c("2005_religious_pref", "2007_religious_pref", "2009_religious_pref", "2011_religious_pref", "2013_religious_pref", "2015_religious_pref", "2017_religious_pref", "2019_religious_pref", "2021_religious_pref"), names_to="year8", values_to="religious_pref") |>
+  pivot_longer(cols=c("2005_attendance", "2007_attendance", "2009_attendance", "2011_attendance", "2013_attendance", "2015_attendance", "2017_attendance", "2019_attendance", "2021_attendance"), names_to="year9", values_to="attendance")
+
+tidy_PSID <- tidy_PSID |>
+  pivot_longer(cols=c("2005_income", "2007_income", "2009_income", "2011_income", "2013_income", "2015_income", "2017_income", "2019_income", "2021_income"), names_to="year", values_to="income")
+
+tidy_PSID <- tidy_PSID |>
+  pivot_longer(cols=c("2005_donations", "2007_donations", "2009_donations", "2011_donations", "2013_donations", "2015_donations", "2017_donations", "2019_donations", "2021_donations"), names_to="year2", values_to="donations")
+
+tidy_PSID <- tidy_PSID |>
   pivot_longer(cols = c("2005_state_code", "2007_state_code", "2009_state_code", "2011_state_code", "2013_state_code", "2015_state_code", "2017_state_code", "2019_state_code", "2021_state_code"), names_to = "year3", values_to = "state")
+  
 
 tidy_PSID$year <- sub("_income", "", tidy_PSID$year)
 
 # merge datasets
-final_data <- merge(tidy_PSID, clean_enrollment, by=c("state","year"))
+# final_data <- merge(tidy_PSID, clean_enrollment, by=c("state","year"))
+# treatment_data <- merge(tidy_PSID, small_enrollment, by=c("state","year"))
 ```
 
 ```{r}
