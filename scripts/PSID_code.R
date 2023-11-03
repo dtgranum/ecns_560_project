@@ -1,21 +1,6 @@
----
-title: "PSID cleaning"
-output: html_document
-date: '2023-10-31'
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-
-
-```{r}
 library(readxl)
 raw_PSID <- read_excel("J325858.xlsx")
-```
 
-```{r}
 # label variables
 library(tidyverse)
 renamed_PSID <- raw_PSID |>
@@ -106,18 +91,13 @@ renamed_PSID <- raw_PSID |>
     "2021_attendance"=ER81422,      
     "2021_income"=ER81775
   )
-```
 
-
-```{r}
 # change from wide to tidy format
 donationsincome <- renamed_PSID |>
   pivot_longer(cols=c("2005_income", "2007_income", "2009_income", "2011_income", "2013_income", "2015_income", "2017_income", "2019_income", "2021_income"), names_to="year", values_to="income") |>
   pivot_longer(cols=c("2005_donations", "2007_donations", "2009_donations", "2011_donations", "2013_donations", "2015_donations", "2017_donations", "2019_donations", "2021_donations"), names_to="year2", values_to="donations") |>
   select(donations, income, year)
-``` 
 
-```{r}
 library(ggplot2)
 library(skimr)
 skim(donationsincome$donations)
@@ -131,15 +111,12 @@ cleaneddonationsincome <- donationsincome |>
   filter(!is.na(income))
 ggplot(cleaneddonationsincome, aes(donations)) + geom_histogram()
 ggplot(cleaneddonationsincome, aes(income, donations)) + geom_point()
-```
-```{r}
+
 attendanceincome <- renamed_PSID |>
-   pivot_longer(cols=c("2005_income", "2007_income", "2009_income", "2011_income", "2013_income", "2015_income", "2017_income", "2019_income", "2021_income"), names_to="year", values_to="income") |>
+  pivot_longer(cols=c("2005_income", "2007_income", "2009_income", "2011_income", "2013_income", "2015_income", "2017_income", "2019_income", "2021_income"), names_to="year", values_to="income") |>
   pivot_longer(cols=c("2005_attendance", "2011_attendance", "2017_attendance", "2019_attendance", "2021_attendance"), names_to="year9", values_to="attendance") |>
   select(attendance, income, year)
-```
 
-```{r}
 skim(attendanceincome$attendance)
 cleanedattendanceincome <- attendanceincome |>
   filter(!attendance == 98) |>
@@ -150,14 +127,11 @@ cleanedattendanceincome <- attendanceincome |>
   filter(!is.na(income))
 ggplot(cleanedattendanceincome, aes(attendance)) + geom_histogram()
 ggplot(cleanedattendanceincome, aes(income, attendance)) + geom_point()
-```
-```{r}
+
 affiliationtime <- renamed_PSID |>
   pivot_longer(cols=c("2005_religious_pref", "2007_religious_pref", "2009_religious_pref", "2011_religious_pref", "2013_religious_pref", "2015_religious_pref", "2017_religious_pref", "2019_religious_pref", "2021_religious_pref"), names_to="year8", values_to="religious_pref") |>
   select(religious_pref, year8)
-```
 
-```{r}
 cleanedaffiliationtime <- affiliationtime |>
   filter(!is.na(religious_pref)) |>
   mutate(affiliated = if_else((religious_pref == 1|religious_pref == 2|religious_pref == 8|religious_pref == 10|religious_pref == 13), 1, 0)) |>
@@ -165,9 +139,7 @@ cleanedaffiliationtime <- affiliationtime |>
   summarize(mean_affiliated = mean(affiliated))
 
 ggplot(cleanedaffiliationtime, aes(year8, mean_affiliated)) + geom_point()
-```
 
-```{r}
 cleaneddonationsincome2 <- cleaneddonationsincome |>
   group_by(year) |>
   summarize(mean_income = mean(income))
@@ -177,18 +149,16 @@ cleanedattendanceincome2 <- cleanedattendanceincome |>
 
 ggplot(cleaneddonationsincome2, aes(year, mean_income)) + geom_point()
 ggplot(cleanedattendanceincome2, aes(year, mean_attendance)) + geom_point()
-```
-
 
 # for later
 # pivot_longer(cols=c("2005_family_id", "2007_family_id", "2009_family_id", "2011_family_id", "2013_family_id", "2015_family_id", "2017_family_id", "2019_family_id", "2021_family_id"), names_to="year7", values_to="family_id")
 
 # pivot_longer(cols=c("2005_religious_pref", "2007_religious_pref", "2009_religious_pref", "2011_religious_pref", "2013_religious_pref", "2015_religious_pref", "2017_religious_pref", "2019_religious_pref", "2021_religious_pref"), names_to="year8", values_to="religious_pref")
-  
+
 # pivot_longer(cols = c("2005_state_code", "2007_state_code", "2009_state_code", "2011_state_code", "2013_state_code", "2015_state_code", "2017_state_code", "2019_state_code", "2021_state_code"), names_to = "year3", values_to = "state")
 
 # renaming observations
-# tidy_PSID$year <- sub("_income", "", tidy_PSID$year)
+# renamed_PSID$year <- sub("_income", "", renamed_PSID$year)
 
 # merge datasets
 # final_data <- merge(tidy_PSID, clean_enrollment, by=c("state","year"))
