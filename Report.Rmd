@@ -8,9 +8,8 @@ date: '2023-11-03'
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Exploratory Analysis
+## Topic
 
-Topic:
 In this project, we will be studying Medicaid enrollment on the state-level and religiosity. More broadly we’re looking at the effect of income on religious participation. Using Medicaid expansion under the Affordable Care Act as a natural experiment, we build on previous research indicating that economic conditions are correlated with religious behavior. Variations in Medicaid coverage across states can be used to identify how increases in financial wellbeing impact household choices, behaviors, and beliefs. 
 
 Research question:
@@ -39,14 +38,13 @@ We have three outcomes of interest we will look at in order to get a measure of 
 After plotting histograms of income, donations, and attendance it shows that each is right skewed so we will need to log transform donations and attendance in order to use them. We also noticed some extreme values and after consulting the codebook realized many of those extreme values were for NA or didn’t know (DK). One of the extreme values we removed for the income variable was those who lost $999,999 or more since we figured that was most likely an outlier and the purpose of having income in the data is to figure out if they qualified for Medicaid or not. This is important because one of our tentative plans for our econometric analysis is to only include people who qualified for Medicaid before and after the expansion in our dataset.
 
 
-
 ## Findings
 
 We find that religious affiliation, attendance at religious events, and donations to religious organizations have declined over time. 
 
 We also find that income and donations to religious organizations as well as income and attendance at religious events have a weak negative correlation.
 
-```{r pressure, echo=FALSE}
+```{r echo=FALSE, out.width = "50%", fig.align = "center"}
 knitr::include_graphics("output/affiliationtime.png")
 ```
 
