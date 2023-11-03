@@ -142,12 +142,15 @@ ggplot(cleanedaffiliationtime, aes(year8, mean_affiliated)) + geom_point()
 
 cleaneddonationsincome2 <- cleaneddonationsincome |>
   group_by(year) |>
-  summarize(mean_income = mean(income))
+  summarize(mean_income = mean(income)) |>
+  group_by(year) |>
+  summarize(mean_donations = mean(donations))
 cleanedattendanceincome2 <- cleanedattendanceincome |>
   group_by(year) |>
   summarize(mean_attendance = mean(attendance))
 
 ggplot(cleaneddonationsincome2, aes(year, mean_income)) + geom_point()
+ggplot(cleaneddonationsincome2, aes(year, mean_donations)) + geom_point()
 ggplot(cleanedattendanceincome2, aes(year, mean_attendance)) + geom_point()
 
 # for later
