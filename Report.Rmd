@@ -8,11 +8,26 @@ date: '2023-11-03'
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## Exploratory Analysis
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Topic:
+In this project, we will be studying Medicaid enrollment on the state-level and religiosity. More broadly we’re looking at the effect of income on religious participation. Using Medicaid expansion under the Affordable Care Act as a natural experiment, we build on previous research indicating that economic conditions are correlated with religious behavior. Variations in Medicaid coverage across states can be used to identify how increases in financial wellbeing impact household choices, behaviors, and beliefs. 
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+Research question:
+What is the effect of Medicaid expansion on religious participation and religious affiliation?
+
+Datasets:
+Our first dataset is National Longitudinal Survey 1979 (NLSY79) from the United States Bureau of Labor Statistics. It contains surveys of 12,686 men and women who were born between 1957 and 1964. This survey tracks these men and women throughout their lifetime. The surveys were annual from 1979 to 1994, then on a biennial basis after 1994 (29 rounds total). This survey contains information on state of residence, income, and religious participation/affiliation.
+Source: https://www.nlsinfo.org/investigator/pages/login
+
+Our second dataset comes from Medicaid and has information on total Medicaid enrollment on a monthly basis between 2014 and 2022 as well as counts for the individuals enrolled in the new adult eligibility group when applicable. This gives us information on how many adults each month by state are enrolling in Medicaid overall and due to expansion of Medicaid.
+Source: https://data.medicaid.gov/dataset/6c114b2c-cb83-559b-832f-4d8b06d6c1b9
+
+We’ll use the dataset above to create a variable indicating whether a state adopted Medicaid expansion and the date it was implemented. Additionally, we will create a variable indicating the proportion of the population enrolled in Medicaid, using the dataset above and annual US Census data.
+Source: https://data.census.gov/table/PEPPOP2019.PEPANNRES?q=population+state
+
+Our datasets are related through state and time variables. 
+
 
 ```{r cars}
 summary(cars)
