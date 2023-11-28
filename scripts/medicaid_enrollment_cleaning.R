@@ -1,4 +1,5 @@
 library(dplyr)
+library(stringr)
 enrollment = read.csv("medicaid_enrollment.csv")
 
 # replace state names with state codes from PSID dataset
@@ -20,4 +21,5 @@ clean_enrollment = clean_enrollment |>
 # create dummy variable indicating medicaid expansion
 clean_enrollment$expansion <- ifelse(clean_enrollment$expanded_enrollees > 0, 1, 0)
 small_enrollment <- subset(clean_enrollment, select=c("state","year","expansion"))
-
+# filter duplicate rows
+final_enrollment <- unique(small_enrollment)

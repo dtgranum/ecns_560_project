@@ -92,13 +92,16 @@ renamed_PSID <- raw_PSID |>
     "2021_income"=ER81775
   )
 
+# make tidy
 attendanceincome <- renamed_PSID |>
   pivot_longer(cols=c("2005_income", "2007_income", "2009_income", "2011_income", "2013_income", "2015_income", "2017_income", "2019_income", "2021_income"), names_to="year", values_to="income") |>
   pivot_longer(cols=c("2005_attendance", "2011_attendance", "2017_attendance", "2019_attendance", "2021_attendance"), names_to="year9", values_to="attendance") |>
   pivot_longer(cols = c("2005_state_code", "2007_state_code", "2009_state_code", "2011_state_code", "2013_state_code", "2015_state_code", "2017_state_code", "2019_state_code", "2021_state_code"), names_to = "year3", values_to = "state") |>
   select(attendance, income, year, state)
+# clean year variable
 attendanceincome$year <- sub("_income", "", attendanceincome$year)
 
+# filter NA values
 cleanedattendanceincome <- attendanceincome |>
   filter(!attendance == 98) |>
   filter(!attendance == 99) |>
@@ -108,5 +111,6 @@ cleanedattendanceincome <- attendanceincome |>
   filter(!is.na(income)) |>
   filter(!is.na(state))
 
-attendancemerge <- merge(cleanedattendanceincome, unique_small_enrollment, by=c("state","year"))
+# merge datasets
+attendancemerge <- merge(cleanedattendanceincome, final_enrollment, by=c("state","year"))
 
