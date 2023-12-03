@@ -113,5 +113,3 @@ cleanedattendanceincome <- attendanceincome |>
 
 # merge datasets
 attendancemerge <- merge(cleanedattendanceincome, final_enrollment, by=c("state","year"))
-lm_attendance <- lm(attendance ~ expansion, data = attendancemerge)
-summary(lm_attendance)

@@ -18,8 +18,57 @@ clean_enrollment = clean_enrollment |>
     year=Enrollment.Year
   )
 
+# make number of expanded enrollees numeric variable and make N/A values 0
+clean_enrollment$expanded_enrollees <- as.numeric(gsub(",","",clean_enrollment$expanded_enrollees))
+clean_enrollment$expanded_enrollees[is.na(clean_enrollment$expanded_enrollees)] <- 0
+
 # create dummy variable indicating medicaid expansion
-clean_enrollment$expansion <- ifelse(clean_enrollment$expanded_enrollees > 0, 1, 0)
+clean_enrollment$expansion <- ifelse(clean_enrollment$expanded_enrollees > 0 , 1, 0)
 small_enrollment <- subset(clean_enrollment, select=c("state","year","expansion"))
 # filter duplicate rows
 final_enrollment <- unique(small_enrollment)
+
+# create post variable
+final_enrollment <- final_enrollment |>
+  mutate(post = case_when(
+    state == 2  & year >= 2014 ~ 1,
+    state == 3 & year >= 2014 ~ 1,
+    state == 4 & year >= 2014 ~ 1,
+    state == 5 & year >= 2014 ~ 1,
+    state == 6 & year >= 2014 ~ 1,
+    state == 7 & year >= 2014 ~ 1,
+    state == 8 & year >= 2014 ~ 1,
+    state == 11 & year >= 2020 ~ 1,
+    state == 12 & year >= 2014 ~ 1,
+    state == 13 & year >= 2015 ~ 1,
+    state == 14 & year >= 2014 ~ 1,
+    state == 16 & year >= 2014 ~ 1,
+    state == 17 & year >= 2016 ~ 1,
+    state == 18 & year >= 2019 ~ 1,
+    state == 19 & year >= 2014 ~ 1,
+    state == 20 & year >= 2014 ~ 1,
+    state == 21 & year >= 2014 ~ 1,
+    state == 22 & year >= 2014 ~ 1,
+    state == 24 & year >= 2021 ~ 1,
+    state == 25 & year >= 2016 ~ 1,
+    state == 26 & year >= 2020 ~ 1,
+    state == 27 & year >= 2014 ~ 1,
+    state == 28 & year >= 2014 ~ 1,
+    state == 29 & year >= 2014 ~ 1,
+    state == 30 & year >= 2014 ~ 1,
+    state == 31 & year >= 2014 ~ 1,
+    state == 33 & year >= 2014 ~ 1,
+    state == 34 & year >= 2014 ~ 1,
+    state == 35 & year >= 2021 ~ 1,
+    state == 36 & year >= 2014 ~ 1,
+    state == 37 & year >= 2015 ~ 1,
+    state == 38 & year >= 2014 ~ 1,
+    state == 43 & year >= 2020 ~ 1,
+    state == 44 & year >= 2014 ~ 1,
+    state == 45 & year >= 2019 ~ 1,
+    state == 46 & year >= 2014 ~ 1,
+    state == 47 & year >= 2014 ~ 1,
+    state == 50 & year >= 2015 ~ 1,
+    state == 51 & year >= 2014 ~ 1,
+    TRUE ~ 0
+  ))
