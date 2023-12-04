@@ -93,23 +93,28 @@ renamed_PSID <- raw_PSID |>
   )
 
 # make tidy
-attendanceincome <- renamed_PSID |>
+PSID <- renamed_PSID |>
   pivot_longer(cols=c("2005_income", "2007_income", "2009_income", "2011_income", "2013_income", "2015_income", "2017_income", "2019_income", "2021_income"), names_to="year", values_to="income") |>
   pivot_longer(cols=c("2005_attendance", "2011_attendance", "2017_attendance", "2019_attendance", "2021_attendance"), names_to="year9", values_to="attendance") |>
   pivot_longer(cols = c("2005_state_code", "2007_state_code", "2009_state_code", "2011_state_code", "2013_state_code", "2015_state_code", "2017_state_code", "2019_state_code", "2021_state_code"), names_to = "year3", values_to = "state") |>
-  select(attendance, income, year, state)
+  select(attendance, income, attendance, donations, year, state)
 # clean year variable
-attendanceincome$year <- sub("_income", "", attendanceincome$year)
+PSID$year <- sub("_income", "", PSID$year)
 
-# filter NA values
-cleanedattendanceincome <- attendanceincome |>
+# filter NA values and add fixed effects
+cleanPSID <- PSID |>
   filter(!attendance == 98) |>
   filter(!attendance == 99) |>
   filter(!is.na(attendance)) |>
   filter(!income == -999999) |>
   filter(!income == 9999999) |>
   filter(!is.na(income)) |>
-  filter(!is.na(state))
+  filter(!is.na(state)) |>
+  mutate(treat = ifelse((state==46 & year>=2014) | (state==36 & year>=2014) | (state==4 & year>=2014) | (state==11 & year>=2020) | (state==27 & year>=2014) | (state==43 & year>=2020) | (state==2 & year>=2014) | (state==25 & year>=2016) | (state==5 & year>=2014) | (state==30 & year>=2014) | (state==33 & year>=2014) | (state==35 & year>=2021) | (state==22 & year>=2014) | (state==14 & year>=2014) | (state==24 & year>=2021) | (state==3 & year>=2014) | (state==17 & year>=2016) | (state==12 & year>=2014) | (state==21 & year>=2014) | (state==13 & year>=2015) | (state==16 & year>=2014) | (state==34 & year>=2014) | (state==47 & year>=2014) | (state==37 & year>=2015) | (state==19 & year>=2014) | (state==45 & year>=2019) | (state==29 & year>=2014) | (state==31 & year>=2014) | (state==7 & year>=2014) | (state==6 & year>=2014) | (state==38 & year>=2014) | (state==20 & year>=2014) | (state==44 & year>=2014) | (state==28 & year>=2014) | (state==18 & year>=2019), 1, 0))
+
+#regression with fixed effects
+ols_fe <- feols(attendance ~ treat | year + state , data=cleanPSID)
+etable(ols_fe, ols_fe)
 
 # merge datasets
-attendancemerge <- merge(cleanedattendanceincome, final_enrollment, by=c("state","year"))
+cleanPSIDmerged <- merge(cleanPSID, final_enrollment, by=c("state","year"))
