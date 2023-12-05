@@ -93,28 +93,98 @@ renamed_PSID <- raw_PSID |>
   )
 
 # make tidy
-PSID <- renamed_PSID |>
-  pivot_longer(cols=c("2005_income", "2007_income", "2009_income", "2011_income", "2013_income", "2015_income", "2017_income", "2019_income", "2021_income"), names_to="year", values_to="income") |>
-  pivot_longer(cols=c("2005_attendance", "2011_attendance", "2017_attendance", "2019_attendance", "2021_attendance"), names_to="year9", values_to="attendance") |>
-  pivot_longer(cols = c("2005_state_code", "2007_state_code", "2009_state_code", "2011_state_code", "2013_state_code", "2015_state_code", "2017_state_code", "2019_state_code", "2021_state_code"), names_to = "year3", values_to = "state") |>
-  select(attendance, income, attendance, donations, year, state)
-# clean year variable
-PSID$year <- sub("_income", "", PSID$year)
+donationsPSID <- renamed_PSID |>
+  pivot_longer(cols=c("2005_donations", "2007_donations", "2009_donations", "2011_donations", "2013_donations", "2015_donations", "2017_donations", "2019_donations", "2021_donations"), names_to="year", values_to="donations") |>
+  pivot_longer(cols = c("2005_state_code", "2007_state_code", "2009_state_code", "2011_state_code", "2013_state_code", "2015_state_code", "2017_state_code", "2019_state_code", "2021_state_code"), names_to = "year2", values_to = "state") |>
+  pivot_longer(cols = c("2005_current_state", "2007_current_state", "2009_current_state", "2011_current_state", "2013_current_state", "2015_current_state", "2017_current_state", "2019_current_state", "2021_current_state"), names_to = "year4", values_to = "fips") |>
+  select(donations, year, fips, state)
 
-# filter NA values and add fixed effects
-cleanPSID <- PSID |>
+donationsPSID$year <- sub("_donations", "", donationsPSID$year)
+
+cleandonationsPSID <- donationsPSID |>
+  filter(!donations == 999998) |>
+  filter(!donations == 999999) |>
+  filter(!is.na(state)) |>
+  filter(!state == 99) |>
+  filter(!state == 0) |>
+  filter(!is.na(fips)) |>
+  filter(!fips == 99) |>
+  filter(!fips == 0)
+  
+
+uniquedonationsPSID <- unique(cleandonationsPSID)
+
+donationsPSIDtreatpost <- uniquedonationsPSID |>
+  mutate(treatpost = ifelse((state==46 & year>=2014) | (state==36 & year>=2014) | (state==4 & year>=2014) | (state==11 & year>=2020) | (state==27 & year>=2014) | (state==43 & year>=2020) | (state==2 & year>=2014) | (state==25 & year>=2016) | (state==5 & year>=2014) | (state==30 & year>=2014) | (state==33 & year>=2014) | (state==35 & year>=2021) | (state==22 & year>=2014) | (state==14 & year>=2014) | (state==24 & year>=2021) | (state==3 & year>=2014) | (state==17 & year>=2016) | (state==12 & year>=2014) | (state==21 & year>=2014) | (state==13 & year>=2015) | (state==16 & year>=2014) | (state==34 & year>=2014) | (state==47 & year>=2014) | (state==37 & year>=2015) | (state==19 & year>=2014) | (state==45 & year>=2019) | (state==29 & year>=2014) | (state==31 & year>=2014) | (state==7 & year>=2014) | (state==6 & year>=2014) | (state==38 & year>=2014) | (state==20 & year>=2014) | (state==44 & year>=2014) | (state==28 & year>=2014) | (state==18 & year>=2019), 1, 0))
+
+donationsPSIDtreatpost <- donationsPSIDtreatpost |>
+  mutate(treat = ifelse(
+  state %in% c(2, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 16, 17, 18, 19, 20, 21, 22, 24, 25, 26, 27, 28, 29, 30, 31, 33, 34, 35, 36, 37, 38, 43, 44, 45, 46, 47, 50, 51),
+  1,
+  0))
+
+ols_fe_donations <- feols(donations ~ treatpost | year + family, data = donationsPSIDtreatpost)
+etable(ols_fe_donations, ols_fe_donations)
+
+rm(cleandonationsPSID)
+rm(donationsPSID)
+rm(uniquedonationsPSID)
+
+attendancePSID <- renamed_PSID |>
+  pivot_longer(cols=c("2005_family_id", "2007_family_id", "2009_family_id", "2011_family_id", "2013_family_id", "2015_family_id", "2017_family_id", "2019_family_id", "2021_family_id"), names_to="year", values_to="family") |>
+  pivot_longer(cols=c("2005_attendance", "2011_attendance", "2017_attendance", "2019_attendance", "2021_attendance"), names_to="year1", values_to="attendance") |>
+  pivot_longer(cols = c("2005_state_code", "2007_state_code", "2009_state_code", "2011_state_code", "2013_state_code", "2015_state_code", "2017_state_code", "2019_state_code", "2021_state_code"), names_to = "year2", values_to = "state") |>
+  select(attendance, year, family, state)
+
+attendancePSID$year <- sub("_attendance", "", attendancePSID$year)
+
+cleanattendancePSID <- attendancePSID |>
   filter(!attendance == 98) |>
   filter(!attendance == 99) |>
   filter(!is.na(attendance)) |>
-  filter(!income == -999999) |>
-  filter(!income == 9999999) |>
-  filter(!is.na(income)) |>
   filter(!is.na(state)) |>
-  mutate(treat = ifelse((state==46 & year>=2014) | (state==36 & year>=2014) | (state==4 & year>=2014) | (state==11 & year>=2020) | (state==27 & year>=2014) | (state==43 & year>=2020) | (state==2 & year>=2014) | (state==25 & year>=2016) | (state==5 & year>=2014) | (state==30 & year>=2014) | (state==33 & year>=2014) | (state==35 & year>=2021) | (state==22 & year>=2014) | (state==14 & year>=2014) | (state==24 & year>=2021) | (state==3 & year>=2014) | (state==17 & year>=2016) | (state==12 & year>=2014) | (state==21 & year>=2014) | (state==13 & year>=2015) | (state==16 & year>=2014) | (state==34 & year>=2014) | (state==47 & year>=2014) | (state==37 & year>=2015) | (state==19 & year>=2014) | (state==45 & year>=2019) | (state==29 & year>=2014) | (state==31 & year>=2014) | (state==7 & year>=2014) | (state==6 & year>=2014) | (state==38 & year>=2014) | (state==20 & year>=2014) | (state==44 & year>=2014) | (state==28 & year>=2014) | (state==18 & year>=2019), 1, 0))
+  filter(!state == 99) |>
+  filter(!state == 0)
 
-#regression with fixed effects
-ols_fe <- feols(attendance ~ treat | year + state , data=cleanPSID)
-etable(ols_fe, ols_fe)
+uniqueattendancePSID <- unique(cleanattendancePSID)
 
-# merge datasets
-cleanPSIDmerged <- merge(cleanPSID, final_enrollment, by=c("state","year"))
+attendancePSIDtreatpost <- uniqueattendancePSID |>
+  mutate(treatpost = ifelse((state==46 & year>=2014) | (state==36 & year>=2014) | (state==4 & year>=2014) | (state==11 & year>=2020) | (state==27 & year>=2014) | (state==43 & year>=2020) | (state==2 & year>=2014) | (state==25 & year>=2016) | (state==5 & year>=2014) | (state==30 & year>=2014) | (state==33 & year>=2014) | (state==35 & year>=2021) | (state==22 & year>=2014) | (state==14 & year>=2014) | (state==24 & year>=2021) | (state==3 & year>=2014) | (state==17 & year>=2016) | (state==12 & year>=2014) | (state==21 & year>=2014) | (state==13 & year>=2015) | (state==16 & year>=2014) | (state==34 & year>=2014) | (state==47 & year>=2014) | (state==37 & year>=2015) | (state==19 & year>=2014) | (state==45 & year>=2019) | (state==29 & year>=2014) | (state==31 & year>=2014) | (state==7 & year>=2014) | (state==6 & year>=2014) | (state==38 & year>=2014) | (state==20 & year>=2014) | (state==44 & year>=2014) | (state==28 & year>=2014) | (state==18 & year>=2019), 1, 0))
+
+ols_fe_attendance <- feols(attendance ~ treatpost | year + family, data = attendancePSIDtreatpost)
+etable(ols_fe_attendance, ols_fe_attendance)
+
+rm(cleanattendancePSID)
+rm(attendancePSID)
+rm(uniqueattendancePSID)
+
+
+affiliationPSID <- renamed_PSID |>
+  pivot_longer(cols=c("2005_family_id", "2007_family_id", "2009_family_id", "2011_family_id", "2013_family_id", "2015_family_id", "2017_family_id", "2019_family_id", "2021_family_id"), names_to="year", values_to="family") |>
+  pivot_longer(cols=c("2005_religious_pref", "2007_religious_pref", "2009_religious_pref", "2011_religious_pref", "2013_religious_pref", "2015_religious_pref", "2017_religious_pref", "2019_religious_pref", "2021_religious_pref"), names_to="year1", values_to="affiliation") |>
+  pivot_longer(cols = c("2005_state_code", "2007_state_code", "2009_state_code", "2011_state_code", "2013_state_code", "2015_state_code", "2017_state_code", "2019_state_code", "2021_state_code"), names_to = "year2", values_to = "state") |>
+  select(affiliation, year, family, state)
+
+affiliationPSID$year <- sub("_family_id", "", affiliationPSID$year)
+
+cleanaffiliationPSID <- affiliationPSID |>
+  filter(!affiliation == 99) |>
+  filter(!is.na(state)) |>
+  filter(!state == 99) |>
+  filter(!state == 0) |>
+  mutate(affiliateddummy = if_else((affiliation == 1|affiliation == 2|affiliation == 8|affiliation == 10|affiliation == 13), 1, 0))
+
+uniqueaffiliationPSID <- unique(cleanaffiliationPSID)
+
+affiliationPSIDtreatpost <- uniqueaffiliationPSID |>
+  mutate(treatpost = ifelse((state==46 & year>=2014) | (state==36 & year>=2014) | (state==4 & year>=2014) | (state==11 & year>=2020) | (state==27 & year>=2014) | (state==43 & year>=2020) | (state==2 & year>=2014) | (state==25 & year>=2016) | (state==5 & year>=2014) | (state==30 & year>=2014) | (state==33 & year>=2014) | (state==35 & year>=2021) | (state==22 & year>=2014) | (state==14 & year>=2014) | (state==24 & year>=2021) | (state==3 & year>=2014) | (state==17 & year>=2016) | (state==12 & year>=2014) | (state==21 & year>=2014) | (state==13 & year>=2015) | (state==16 & year>=2014) | (state==34 & year>=2014) | (state==47 & year>=2014) | (state==37 & year>=2015) | (state==19 & year>=2014) | (state==45 & year>=2019) | (state==29 & year>=2014) | (state==31 & year>=2014) | (state==7 & year>=2014) | (state==6 & year>=2014) | (state==38 & year>=2014) | (state==20 & year>=2014) | (state==44 & year>=2014) | (state==28 & year>=2014) | (state==18 & year>=2019), 1, 0))
+
+ols_fe_affiliation <- feols(affiliateddummy ~ treatpost | year + family, data = affiliationPSIDtreatpost)
+etable(ols_fe_affiliation, ols_fe_affiliation)
+
+rm(cleanaffiliationPSID)
+rm(affiliationPSID)
+rm(uniqueaffiliationPSID)
+
+
+# pivot_longer(cols=c("2005_income", "2007_income", "2009_income", "2011_income", "2013_income", "2015_income", "2017_income", "2019_income", # "2021_income"), names_to="year1", values_to="income") |>
