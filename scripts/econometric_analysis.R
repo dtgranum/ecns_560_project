@@ -122,7 +122,7 @@ attendance_merged <- attendance_merged |>
 attendance_merged$treat <- replace(attendance_merged$treat, is.na(attendance_merged$treat), 0)
 attendance_merged$treatpost <- replace(attendance_merged$treatpost, is.na(attendance_merged$treatpost), 0)
 
-ols_fe_attendance <- feols(attendance ~ treatpost | year + family, data = attendancePSIDtreatpost)
+ols_fe_attendance <- feols(attendance ~ treatpost | year + state, data = attendance_merged)
 etable(ols_fe_attendance, ols_fe_attendance)
 
 

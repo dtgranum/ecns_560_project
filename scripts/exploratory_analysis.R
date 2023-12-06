@@ -45,7 +45,7 @@ event_study_untreat <- attendance_merged |>
 
 legend_colors <- c("Treated" = "blue", "Untreated" = "red")
 
-ggplot() + geom_line(data=event_study_treat,aes(x=time,y=meanattendance,color="Treated")) + geom_line(data=event_study_untreat,aes(x=time,y=meanattendance,color="Untreated")) + labs(x="Time", y="Average Attendance", color = "Legend") + scale_color_manual(values = legend_colors) + ggtitle("Event Study") + theme_classic()
+ggplot() + geom_line(data=event_study_treat,aes(x=time,y=meanattendance,color="Treated")) + geom_line(data=event_study_untreat,aes(x=time,y=meanattendance,color="Untreated")) + labs(x="Time", y="Average Attendance", color = "Legend") + scale_color_manual(values = legend_colors) + ggtitle("Event Study") + theme_classic() + geom_vline(xintercept=0)
 
 #attendance overtime
 attendance_overtime <- attendance_merged |>
