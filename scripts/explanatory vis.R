@@ -3,31 +3,27 @@ library(usmap)
 library(ggplot2)
 library(sf)
 library(tmap)
-library(viridis)
+library(RColorBrewer)
 
-
-maps_data <- cleandonationsPSID |>
-  mutate(fips <- as.character(cleandonationsPSID$fips))
-new$fips <- new$`fips <- as.character(cleandonationsPSID$fips)`
-
-av_don <- aggregate(new$donations, list(new$fips), FUN=mean)
-av_don <- av_don |>
+# create map of attendance
+mean_attend <- aggregate(attendance_merged$attendance, list(attendance_merged$state), FUN=mean)
+mean_attend <- mean_attend |>
   rename(
     fips = Group.1,
-    average_donations = x
+    average_attendance = x
   )
+mean_attend$average_attendance <- as.character(mean_attend$average_attendance)
+plot_usmap(data=mean_attend, values="average_attendance") + scale_fill_continuous(name = "Number of Religious Services Attended") + theme(legend.position = "right" ) + labs(title = "Average Yearly Attendance of Religious Services (2005-2021)")
 
-plot_usmap(data=av_don, values="average_donations")
-
-# do this in a better way when treat variable is in psid dataset
-av_don <- av_don |>
-  mutate(expanded_state = ifelse(
-    fips %in% c(4, 5, 6, 8, 9, 10, 11, 16, 17, 18, 19, 21, 22, 23, 24, 
-                25, 26, 27, 29, 30, 31, 32, 33, 34, 35, 36, 38, 39, 40, 41, 42, 43, 44, 49, 50, 51, 52, 53, 54),
-    1,
-    0))
-
-expanded = av_don |>
-  select(fips, expanded_state)
-
-plot_usmap(data=av_don, values="expanded_state")
+# create map of medicaid expansion
+expanded_states <- attendance_merged |>
+  select(state, treat)
+expanded_states <- unique(expanded_states)
+expanded_states <- expanded_states |>
+  rename(
+    fips = state
+  )
+expanded_states$treat <- as.character(expanded_states$treat)
+expanded_states$treat <- replace(expanded_states$treat, expanded_states$treat=="1", "Expanded Medicaid")
+expanded_states$treat <- replace(expanded_states$treat, expanded_states$treat=="0", "Did Not Expand Medicaid")
+plot_usmap(data=expanded_states, values="treat") + scale_fill_brewer(type="div", "Expansion Status (2021)", palette= "Greens") + theme(legend.position = "right" ) + labs(title = "Medicaid Expansion")

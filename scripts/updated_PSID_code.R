@@ -1,6 +1,6 @@
 library(readxl)
 library(dplyr)
-raw_PSID <- read_excel("J325858.xlsx")
+raw_PSID <- read_excel("raw data/J325858.xlsx")
 
 # label variables
 library(tidyverse)
@@ -110,16 +110,17 @@ cleanattendancePSID <- attendancePSID |>
   filter(!state == 99) |>
   filter(!state == 0)
 
-uniqueattendancePSID <- unique(cleanattendancePSID)
+# uniqueattendancePSID <- unique(cleanattendancePSID)
 
-attendance_merged <- left_join(uniqueattendancePSID, clean_enrollment, by=c("state","year"))
+attendance_merged <- left_join(cleanattendancePSID, final_enrollment, by=c("state","year"))
 
 attendance_merged <- attendance_merged |>
   group_by(state) |>
   mutate(treat = as.numeric(any(treatpost == 1))) |>
   ungroup()
 
-
+attendance_merged$treat <- replace(attendance_merged$treat, is.na(attendance_merged$treat), 0)
+attendance_merged$treatpost <- replace(attendance_merged$treatpost, is.na(attendance_merged$treatpost), 0)
 
 
 
@@ -150,8 +151,6 @@ cleandonationsPSID <- donationsPSID |>
   filter(!state == 99) |>
   filter(!state == 0)
 
-uniquedonationsPSID <- unique(cleandonationsPSID)
-
 donationsPSIDtreatpost <- uniquedonationsPSID |> inner_join(final_enrollment, by=c("state","year"))
 
 donationsPSIDtreatpost <- left_join(uniquedonationsPSID, clean_enrollment, by=c("state","year"))
@@ -160,17 +159,6 @@ donationsPSIDtreatpost <- donationsPSIDtreatpost |>
   group_by(state) |>
   mutate(treat = as.numeric(any(treatpost == 1))) |>
   ungroup()
-
-
-
-
-
-
-
-
-
-
-
 
 
 

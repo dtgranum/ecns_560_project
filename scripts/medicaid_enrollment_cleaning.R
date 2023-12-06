@@ -1,6 +1,8 @@
 library(dplyr)
 library(stringr)
-enrollment = read.csv("medicaid_enrollment.csv")
+library(cdlTools)
+# setwd("/ecns_560_project")
+enrollment = read.csv("raw data/medicaid_enrollment.csv")
 
 # replace state names with FIPS codes
 enrollment$State <- fips(enrollment$State)
@@ -21,6 +23,7 @@ clean_enrollment = clean_enrollment |>
 clean_enrollment$expanded_enrollees <- as.numeric(gsub(",","",clean_enrollment$expanded_enrollees))
 clean_enrollment$expanded_enrollees[is.na(clean_enrollment$expanded_enrollees)] <- 0
 clean_enrollment$year <- as.character(clean_enrollment$year)
+clean_enrollment$state <- as.character(clean_enrollment$state)
 
 # create dummy variable indicating medicaid expansion
 clean_enrollment$treatpost <- ifelse(clean_enrollment$expanded_enrollees > 0 , 1, 0)
