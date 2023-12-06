@@ -20,19 +20,22 @@ clean_enrollment = clean_enrollment |>
 # make number of expanded enrollees numeric variable and make N/A values 0
 clean_enrollment$expanded_enrollees <- as.numeric(gsub(",","",clean_enrollment$expanded_enrollees))
 clean_enrollment$expanded_enrollees[is.na(clean_enrollment$expanded_enrollees)] <- 0
+clean_enrollment$year <- as.character(clean_enrollment$year)
 
 # create dummy variable indicating medicaid expansion
 clean_enrollment$treatpost <- ifelse(clean_enrollment$expanded_enrollees > 0 , 1, 0)
-small_enrollment <- subset(clean_enrollment, select=c("state","year","treatpost"))
-# filter duplicate rows
-final_enrollment <- unique(small_enrollment)
 
-# create treat variable
-final_enrollment <- final_enrollment |>
+# create dummy variable indicating treatment group
+clean_enrollment <- clean_enrollment |>
   group_by(state) |>
   mutate(treat = as.numeric(any(treatpost == 1))) |>
   ungroup()
-  
+
+small_enrollment <- subset(clean_enrollment, select=c("state","year","treatpost"))
+
+# filter duplicate rows
+final_enrollment <- unique(small_enrollment)
+
 
 
     
