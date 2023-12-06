@@ -6,14 +6,17 @@ library(tmap)
 library(RColorBrewer)
 
 # create map of attendance
-mean_attend <- aggregate(attendance_merged$attendance, list(attendance_merged$state), FUN=mean)
-mean_attend <- mean_attend |>
+mean_attend$average_attendance <- as.numeric(mean_attend$average_attendance)
+plot_usmap(data=mean_attend, values="average_attendance") + scale_fill_continuous("Number of Religious Services Attended") + theme(legend.position = "right" ) + labs(title = "Average Yearly Attendance of Religious Services (2005-2021)")
+# create map of percent regularly attended
+mean_reg_attend <- aggregate(attendance_merged$reg_attend, list(attendance_merged$state), FUN=mean)
+mean_reg_attend <- mean_reg_attend |>
   rename(
     fips = Group.1,
-    average_attendance = x
+    average_reg_attendance = x
   )
-mean_attend$average_attendance <- as.character(mean_attend$average_attendance)
-plot_usmap(data=mean_attend, values="average_attendance") + scale_fill_continuous(name = "Number of Religious Services Attended") + theme(legend.position = "right" ) + labs(title = "Average Yearly Attendance of Religious Services (2005-2021)")
+mean_reg_attend$average_reg_attendance <- as.numeric(mean_reg_attend$average_reg_attendance)
+plot_usmap(data=mean_reg_attend, values="average_reg_attendance") + scale_fill_continuous("% Attending More than 5 Services", limits=c(0,.15), labels = scales::percent_format(accuracy = 1)) + theme(legend.position = "right" ) + labs(title = "% Regularly Attending Religious Services (2005-2021)") + theme(panel.background = element_rect(colour = "black"))
 
 # create map of medicaid expansion
 expanded_states <- attendance_merged |>
@@ -26,7 +29,7 @@ expanded_states <- expanded_states |>
 expanded_states$treat <- as.character(expanded_states$treat)
 expanded_states$treat <- replace(expanded_states$treat, expanded_states$treat=="1", "Expanded Medicaid")
 expanded_states$treat <- replace(expanded_states$treat, expanded_states$treat=="0", "Did Not Expand Medicaid")
-plot_usmap(data=expanded_states, values="treat") + scale_fill_brewer(type="div", "Expansion Status (2021)", palette= "Greens") + theme(legend.position = "right" ) + labs(title = "Medicaid Expansion")
+plot_usmap(data=expanded_states, values="treat") + scale_fill_brewer(type="div", "Expansion Status (2021)", palette= "Blues") + theme(legend.position = "right" ) + labs(title = "Medicaid Expansion")
 
 #create event study
 event_study_treat <- attendance_merged |>
