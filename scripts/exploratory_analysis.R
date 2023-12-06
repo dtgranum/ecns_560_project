@@ -53,5 +53,22 @@ attendance_overtime <- attendance_merged |>
   summarize(meanattendance = mean(attendance)) |>
   ungroup()
 
-ggplot(data=attendance_overtime,aes(x=year,y=meanattendance,group=1)) + geom_line() + labs(x="Average Attendance", y="Year") + ggtitle("Average Religious Event Attendance Overtime")
+ggplot(data=attendance_overtime,aes(x=year,y=meanattendance,group=1)) + geom_line() + labs(x="Year", y="Average Attendance") + ggtitle("Average Religious Event Attendance Overtime")
   
+#medicaid percent change
+medicaid_percent_change <- read.csv("percent_change_in_enrollment.csv")
+medicaid_percent_change_before <- medicaid_percent_change |>
+  select(Location, Pre.ACA.Average.Monthly.Enrollment, Percent.Change) |>
+  mutate(year=2013) |>
+  rename(Enrollment = Pre.ACA.Average.Monthly.Enrollment)
+
+medicaid_percent_change_after <- medicaid_percent_change |>
+  select(Location, Total.Monthly.Medicaid.CHIP.Enrollment, Percent.Change) |>
+  mutate(year=2023) |>
+  rename(Enrollment = Total.Monthly.Medicaid.CHIP.Enrollment)
+  
+medicaid_percent_change_final <- rbind(medicaid_percent_change_before, medicaid_percent_change_after) |>
+  filter(!Location=="District of Columbia") |>
+  rename(State = Location)
+  
+ggplot(data=medicaid_percent_change_final, aes(x=Enrollment,y=State)) + geom_line(aes(group=State)) + geom_point(size=2, aes(color = factor(year))) + scale_x_discrete(limits=0:15000000, breaks=c(1000000, 2000000, 3000000, 4000000, 5000000, 6000000, 7000000, 8000000, 9000000, 10000000, 11000000, 12000000, 13000000, 14000000)) + ggtitle("Medicaid Enrollment Before and After Expansion by State")
