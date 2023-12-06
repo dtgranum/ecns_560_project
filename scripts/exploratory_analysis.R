@@ -27,3 +27,31 @@ expanded_states$treat <- as.character(expanded_states$treat)
 expanded_states$treat <- replace(expanded_states$treat, expanded_states$treat=="1", "Expanded Medicaid")
 expanded_states$treat <- replace(expanded_states$treat, expanded_states$treat=="0", "Did Not Expand Medicaid")
 plot_usmap(data=expanded_states, values="treat") + scale_fill_brewer(type="div", "Expansion Status (2021)", palette= "Greens") + theme(legend.position = "right" ) + labs(title = "Medicaid Expansion")
+
+#create event study
+event_study_treat <- attendance_merged |>
+  mutate(year1 = as.numeric(year)) |>
+  mutate(time = (year1-2014)) |>
+  filter(treat==1) |>
+  group_by(time) |>
+  mutate(meanattendance = mean(attendance))
+
+event_study_untreat <- attendance_merged |>
+  mutate(year1 = as.numeric(year)) |>
+  mutate(time = (year1-2014)) |>
+  filter(treat==0) |>
+  group_by(time) |>
+  mutate(meanattendance = mean(attendance))
+
+legend_colors <- c("Treated" = "blue", "Untreated" = "red")
+
+ggplot() + geom_line(data=event_study_treat,aes(x=time,y=meanattendance,color="Treated")) + geom_line(data=event_study_untreat,aes(x=time,y=meanattendance,color="Untreated")) + labs(x="Time", y="Average Attendance", color = "Legend") + scale_color_manual(values = legend_colors) + ggtitle("Event Study") + theme_classic()
+
+#attendance overtime
+attendance_overtime <- attendance_merged |>
+  group_by(year) |>
+  summarize(meanattendance = mean(attendance)) |>
+  ungroup()
+
+ggplot(data=attendance_overtime,aes(x=year,y=meanattendance,group=1)) + geom_line() + labs(x="Average Attendance", y="Year") + ggtitle("Average Religious Event Attendance Overtime")
+  
