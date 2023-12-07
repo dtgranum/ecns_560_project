@@ -1,5 +1,5 @@
 ---
-title: "Exploratory Analysis Report"
+title: "Final Report"
 author:
   - Dylan Granum
   - Ella Johnson
