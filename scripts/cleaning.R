@@ -98,7 +98,8 @@ renamed_PSID <- raw_PSID |>
 attendancePSID <- renamed_PSID |>
   pivot_longer(cols=c("2005_attendance", "2011_attendance", "2017_attendance", "2019_attendance", "2021_attendance"), names_to="year", values_to="attendance") |>
   pivot_longer(cols = c("2005_current_state", "2007_current_state", "2009_current_state", "2011_current_state", "2013_current_state", "2015_current_state", "2017_current_state", "2019_current_state", "2021_current_state"), names_to = "year4", values_to = "state") |>
-  select(attendance, year, state)
+  pivot_longer(cols=c("2005_income", "2007_income", "2009_income", "2011_income", "2013_income", "2015_income", "2017_income", "2019_income", "2021_income"), names_to="year1", values_to="income") |>
+  select(attendance, year, state, income)
 
 attendancePSID$year <- sub("_attendance", "", attendancePSID$year)
 attendancePSID$state <- as.character(attendancePSID$state)
