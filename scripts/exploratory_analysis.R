@@ -6,6 +6,12 @@ library(tmap)
 library(RColorBrewer)
 
 # create map of attendance
+mean_attend <- aggregate(attendance_merged$attendance, list(attendance_merged$state), FUN=mean)
+mean_attend <- mean_attend |>
+  rename(
+    fips = Group.1,
+    average_attendance = x
+  )
 mean_attend$average_attendance <- as.numeric(mean_attend$average_attendance)
 plot_usmap(data=mean_attend, values="average_attendance") + scale_fill_continuous("Number of Religious Services Attended") + theme(legend.position = "right" ) + labs(title = "Average Yearly Attendance of Religious Services (2005-2021)")
 # create map of percent regularly attended
@@ -46,9 +52,9 @@ event_study_untreat <- attendance_merged |>
   group_by(time) |>
   mutate(meanattendance = mean(attendance))
 
-legend_colors <- c("Treated" = "blue", "Untreated" = "red")
+legend_colors <- c("Expanded Medicaid" = "blue", "Did Not Expand Medicaid" = "red")
 
-ggplot() + geom_line(data=event_study_treat,aes(x=time,y=meanattendance,color="Treated")) + geom_line(data=event_study_untreat,aes(x=time,y=meanattendance,color="Untreated")) + labs(x="Time", y="Average Attendance", color = "Legend") + scale_color_manual(values = legend_colors) + ggtitle("Event Study") + theme_classic() + geom_vline(xintercept=0)
+ggplot() + geom_line(data=event_study_treat,aes(x=time,y=meanattendance,color="Expanded Medicaid")) + geom_line(data=event_study_untreat,aes(x=time,y=meanattendance,color="Did Not Expand Medicaid")) + labs(x="Year (Relative to 2014)", y="Average Yearly Attendance", color = "Legend") + scale_color_manual(values = legend_colors) + ggtitle("Event Study") + theme_classic() + geom_vline(xintercept=0)
 
 #attendance overtime
 attendance_overtime <- attendance_merged |>
@@ -56,10 +62,10 @@ attendance_overtime <- attendance_merged |>
   summarize(meanattendance = mean(attendance)) |>
   ungroup()
 
-ggplot(data=attendance_overtime,aes(x=year,y=meanattendance,group=1)) + geom_line() + labs(x="Year", y="Average Attendance") + ggtitle("Average Religious Event Attendance Overtime")
-  
+ggplot(data=attendance_overtime,aes(x=year,y=meanattendance,group=1)) + geom_line() + labs(x="Average Attendance", y="Year") + ggtitle("Average Religious Event Attendance Over Time")
+
 #medicaid percent change
-medicaid_percent_change <- read.csv("percent_change_in_enrollment.csv")
+medicaid_percent_change <- read.csv("raw data/percent_change_in_enrollment.csv")
 medicaid_percent_change_before <- medicaid_percent_change |>
   select(Location, Pre.ACA.Average.Monthly.Enrollment, Percent.Change) |>
   mutate(year=2013) |>
@@ -75,3 +81,4 @@ medicaid_percent_change_final <- rbind(medicaid_percent_change_before, medicaid_
   rename(State = Location)
   
 ggplot(data=medicaid_percent_change_final, aes(x=Enrollment,y=State)) + geom_line(aes(group=State)) + geom_point(size=2, aes(color = factor(year))) + scale_x_discrete(limits=0:15000000, breaks=c(1000000, 2000000, 3000000, 4000000, 5000000, 6000000, 7000000, 8000000, 9000000, 10000000, 11000000, 12000000, 13000000, 14000000)) + ggtitle("Medicaid Enrollment Before and After Expansion by State")
+

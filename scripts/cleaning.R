@@ -116,18 +116,6 @@ cleanattendancePSID <- attendancePSID |>
   filter(!state == 99) |>
   filter(!state == 0)
 
-attendance_merged <- left_join(cleanattendancePSID, final_enrollment, by=c("state","year"))
-
-attendance_merged <- attendance_merged |>
-  group_by(state) |>
-  mutate(treat = as.numeric(any(treatpost == 1))) |>
-  ungroup()
-
-attendance_merged$treat <- replace(attendance_merged$treat, is.na(attendance_merged$treat), 0)
-attendance_merged$treatpost <- replace(attendance_merged$treatpost, is.na(attendance_merged$treatpost), 0)
-
-# create dummy variable indicating regular services attendance
-attendance_merged$reg_attend <- ifelse(attendance_merged$attendance > 5 , 1, 0)
 
 #medicaid cleaning
 #reading in data
@@ -171,7 +159,18 @@ final_enrollment <- unique(small_enrollment)
 final_enrollment <- final_enrollment |>
   filter(!is.na(state))
   
+attendance_merged <- left_join(cleanattendancePSID, final_enrollment, by=c("state","year"))
 
+attendance_merged <- attendance_merged |>
+  group_by(state) |>
+  mutate(treat = as.numeric(any(treatpost == 1))) |>
+  ungroup()
+
+attendance_merged$treat <- replace(attendance_merged$treat, is.na(attendance_merged$treat), 0)
+attendance_merged$treatpost <- replace(attendance_merged$treatpost, is.na(attendance_merged$treatpost), 0)
+
+# create dummy variable indicating regular services attendance
+attendance_merged$reg_attend <- ifelse(attendance_merged$attendance > 5 , 1, 0)
 
     
     
