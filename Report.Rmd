@@ -1,16 +1,20 @@
 ---
 title: "Exploratory Analysis Report"
+author:
+  - Dylan Granum
+  - Ella Johnson
 output: html_document
-date: '2023-11-03'
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+
+
 ## Topic
 
-In this project, we study Medicaid expansion at the state-level and religiosity. More broadly we’re looking at the effect of overall well-being on religious participation. Using Medicaid expansion under the Affordable Care Act as a natural experiment, we build on previous research indicating that economic conditions are correlated with religious behavior. Variations in Medicaid coverage across states can be used to identify how increases in financial well-being impact people's choices, behaviors, and beliefs. 
+In this project, we study the relationship between Medicaid expansion at the state-level and religiosity. More broadly, our goal is to estimate the effect of overall well-being on religious participation. Using Medicaid expansion under the Affordable Care Act as a natural experiment, we build on previous research indicating that economic conditions are correlated with religious behavior. Variations in Medicaid coverage across states can be used to identify how increases in financial well-being impact people's choices, behaviors, and beliefs. 
 
 Research question:
 What is the effect of Medicaid expansion on the attendance of religious services?
@@ -85,8 +89,6 @@ We can repeat the same model structure using percentage of respondents that regu
 Another regression alternative is to restrict the regression to households to those earning below the income eligibility requirement for Medicaid expansion. This depends on the federal poverty level and size of family, so we will choose to restrict the data to only households earning less than $40,000 per year as an approximation. 
 
 ### Results & Interpretation
-Interpret your results. Put the coefficient(s) into complete sentences of English to explain what the regression told you. Explain what they mean. What new facts do we learn about the world from the relationships (or lack of relationships) you find? Since your research question is only descriptive, be very careful not to claim or even imply any causal interpretation of your results.
-Interpret your results through the lens of causal inference. How plausible would it be to interpret your results causally? Describe the limitations to doing so. What are some likely sources of bias, in what direction are they likely to push, and how concerned should we be about them? It’s often helpful to describe what the ideal experiment would be, and then compare your situation to that experiment.
 
 ```{r echo=FALSE, out.width = "75%", fig.align = "center"}
 knitr::include_graphics("output/Regression_1.png")
@@ -99,13 +101,13 @@ knitr::include_graphics("output/Regression_2.png")
 ```{r echo=FALSE, out.width = "75%", fig.align = "center"}
 knitr::include_graphics("output/Regression_3.png")
 ```
-Our analysis is most likely not causal. While we implemented a natural experiment there are several flaws such as a lack of control variables, it is unclear what mechanisms are at work, and using a country-wide analysis. For example, political affiliation is an omitted variable that is positively correlated with religious attendance and negatively correlated with Medicaid expansion being passed so this would cause a downward bias. There is a lot of measurement error in survey data which would cause a downward bias.
+These results suggest a positive relationship between Medicaid expansion and attendance of religious events. $\beta$ in the first regression is .22, meaning that expanding Medicaid is associated with a 22 percent increase in number of services attended. This is significant at the 10 percent level. However, when the sample is restricted to lower-income households, $\beta$ loses significance, when it should gain significance, intuitively. The third regression, using regular attendance as the outcome variable, suggests no relationship with Medicaid expansion. 
 
-Say a few words about how you might proceed from here, if you were going to more convincingly answer your causal research question.
+There are several limits to accepting causal interpretation of these results. While we used expansion choice as a natural experiment, there are several factors that could be contributing to bias. We don't have yearly data for attendance, we do not include control variables, and country-wide state-level variation involves a lot of noise that makes determining expansion's true effect more difficult. There is a lot of measurement error in survey data which would cause a downward bias on the estimates. 
 
-Proceeding from here we would do more work into investigating if Medicaid expansion is a good natural experiment to implement through an event study.
-We would also look at a more specific region of the country rather than the whole country since that causes a lot of noise in the data. For example we would compare Wisconsin-Minnesota or Alabama-Louisiana.
-Proceeding from here we would change our treatment and comparison groups so that the treatment group are people who now qualify for Medicaid expansion while the comparison group are people who would have otherwise qualified for Medicaid expansion but live in a state that did not accept Medicaid expansion. We also see that when we restrict the sample to just families with lower income levels our estimate becomes larger which indicates to us that this would be a good approach to take.
+To improve this analysis, we could add control variables. For example, political affiliation could be an omitted variable correlated with whether a state expands Medicaid that also affects how religious attendance is trending over time. We could also seek to obtain data that was collected more often and more reliable than survey data, so we could more reliably compare expanded and non-expanded states. It would be helpful to more precisely define our treatment and comparison groups so that the treatment group only includes people who now qualify for Medicaid expansion while the comparison group only includes people who would have otherwise qualified for Medicaid expansion but live in a state that did not accept Medicaid expansion, rather than the entire populations of the comparison states.
+
+We could also look at a more specific region of the country rather than the whole country to reduce the amount of noise and extraneous variation in the data. For example, we could compare otherwise similar states that differed in whether they expanded Medicaid, such as Wisconsin and Minnesota or Alabama and Louisiana. 
 
 
 
