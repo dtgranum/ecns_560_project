@@ -81,4 +81,3 @@ medicaid_percent_change_final <- rbind(medicaid_percent_change_before, medicaid_
   rename(State = Location)
   
 ggplot(data=medicaid_percent_change_final, aes(x=Enrollment,y=State)) + geom_line(aes(group=State)) + geom_point(size=2, aes(color = factor(year))) + scale_x_discrete(limits=0:15000000, breaks=c(1000000, 2000000, 3000000, 4000000, 5000000, 6000000, 7000000, 8000000, 9000000, 10000000, 11000000, 12000000, 13000000, 14000000)) + ggtitle("Medicaid Enrollment Before and After Expansion by State")
-
