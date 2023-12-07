@@ -75,9 +75,17 @@ medicaid_percent_change_after <- medicaid_percent_change |>
   select(Location, Total.Monthly.Medicaid.CHIP.Enrollment, Percent.Change) |>
   mutate(year=2023) |>
   rename(Enrollment = Total.Monthly.Medicaid.CHIP.Enrollment)
-  
+
 medicaid_percent_change_final <- rbind(medicaid_percent_change_before, medicaid_percent_change_after) |>
   filter(!Location=="District of Columbia") |>
+  filter(!Location=="United States") |>
+  filter(!Location=="Connecticut") |>
+  filter(!Location=="Maine") |>
   rename(State = Location)
+
+medicaid_percent_change_final <- medicaid_percent_change_final |>
+  mutate(ln_enrollment = log(as.numeric(Enrollment)))
   
-ggplot(data=medicaid_percent_change_final, aes(x=Enrollment,y=State)) + geom_line(aes(group=State)) + geom_point(size=2, aes(color = factor(year))) + scale_x_discrete(limits=0:15000000, breaks=c(1000000, 2000000, 3000000, 4000000, 5000000, 6000000, 7000000, 8000000, 9000000, 10000000, 11000000, 12000000, 13000000, 14000000)) + ggtitle("Medicaid Enrollment Before and After Expansion by State")
+new_plot <- ggplot(data=medicaid_percent_change_final, aes(x=ln_enrollment,y=State)) + geom_line(aes(group=State)) + geom_point(size=2, aes(color = factor(year))) + scale_x_discrete(limits=10:17, breaks=c(11, 12, 13, 14, 15, 16, 17), labels = scales::comma_format(big.mark = ',', decimal.mark = '.')) + ggtitle("Medicaid Enrollment Before and After Expansion by State")
+legend_colors <- c("2013" = "#1f78b4", "2023" = "#b2df8a")
+new_plot + theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),panel.grid.minor = element_blank(), axis.line = element_line(colour = "black")) + labs(x="Log(Medicaid Enrollment)", y="State", color = "Year") + scale_color_manual(values = legend_colors)
