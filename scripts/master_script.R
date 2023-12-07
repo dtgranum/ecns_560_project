@@ -1,4 +1,11 @@
-# ("/ecns_560_project")
+pacman::p_load(tidyverse, estimatr, broom, summarytools, fixest, binsreg)
+library(usmap)
+library(ggplot2)
+library(sf)
+library(tmap)
+library(RColorBrewer)
+
+#set wd ("/ecns_560_project")
 source("scripts/medicaid_enrollment_cleaning.R")
-source("scripts/econometric_analysis.R")
 source("scripts/exploratory_analysis.R")
+source("scripts/econometric_analysis.R")
