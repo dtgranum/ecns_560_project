@@ -10,64 +10,65 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Topic
 
-In this project, we will be studying Medicaid enrollment on the state-level and religiosity. More broadly we’re looking at the effect of income on religious participation. Using Medicaid expansion under the Affordable Care Act as a natural experiment, we build on previous research indicating that economic conditions are correlated with religious behavior. Variations in Medicaid coverage across states can be used to identify how increases in financial wellbeing impact household choices, behaviors, and beliefs. 
+In this project, we study Medicaid expansion at the state-level and religiosity. More broadly we’re looking at the effect of overall well-being on religious participation. Using Medicaid expansion under the Affordable Care Act as a natural experiment, we build on previous research indicating that economic conditions are correlated with religious behavior. Variations in Medicaid coverage across states can be used to identify how increases in financial well-being impact people's choices, behaviors, and beliefs. 
 
 Research question:
-What is the effect of Medicaid expansion on religious participation and religious affiliation?
+What is the effect of Medicaid expansion on the attendance of religious services?
 
 Datasets:
-Our first dataset comes from the Panel Study of Income Dynamics from the Institute for Social Research at the University of Michigan. We use family-level panel survey data, including 16,504 observations. Most variables are measured every two years between 2005 and 2021. This survey contains information on state of residence, income, and religious participation/affiliation.
+Our first dataset comes from the Panel Study of Income Dynamics from the Institute for Social Research at the University of Michigan. We use family-level panel survey data, including 16,504 observations. Most variables are measured every two years between 2005 and 2021. This survey contains information on state of residence, income, and religious behaviors.
 Source: https://simba.isr.umich.edu/data/data.aspx
 
-Our second dataset comes from Medicaid and has information on total Medicaid enrollment on a monthly basis between 2014 and 2022 as well as counts for the individuals enrolled in the new adult eligibility group when applicable. This gives us information on how many adults each month by state are enrolling in Medicaid overall and due to expansion of Medicaid.
+Our second dataset comes from Medicaid and has information on total Medicaid enrollment on a monthly basis between 2014 and 2022 as well as counts for the individuals enrolled in the new adult eligibility group when applicable. This gives us information on whether a state accepted Medicaid expansion.
 Source: https://data.medicaid.gov/dataset/6c114b2c-cb83-559b-832f-4d8b06d6c1b9
 
-We’ll use the dataset above to create a variable indicating whether a state adopted Medicaid expansion and the date it was implemented. Additionally, we will create a variable indicating the proportion of the population enrolled in Medicaid, using the dataset above and annual US Census data.
-Source: https://data.census.gov/table/PEPPOP2019.PEPANNRES?q=population+state
+Our third dataset comes from kff.org and has information on average monthly Medicaid enrollment by state before and after the Affordable Care Act was passed. We only used this dataset to generate a figure showing the change in Medicaid enrollment in 2013 and 2023.
+Source: https://www.kff.org/health-reform/state-indicator/total-monthly-medicaid-and-chip-enrollment/?currentTimeframe=0&sortModel=%7B%22colId%22:%22Location%22,%22sort%22:%22asc%22%7D
 
-Our datasets are related through state and time variables. 
+Our datasets are related through state and time variables.
 
 ## Data wrangling:
 
-Our primary data came from the Panel Study of Income Dynamics. This data was relatively easy to clean since we were able to select what variables and what years we wanted data for. Most of the cleaning involved renaming variables into a useful name, putting the data into long format, and then getting rid of NA values. However, transforming the data to tidy format increased the memory required to a prohibitive size. In order to perform exploratory analysis, we instead selected only the variables of interest.
+Our primary data came from the Panel Study of Income Dynamics. We were able to select which variables and which years we wanted from this panel data. Most of the cleaning involved renaming variables into a useful name, putting the data into long format, and dealing with N/A or ‘don’t know’ (DK) values. However, transforming the data to tidy format increased the memory required to a prohibitive size. In order to perform exploratory analysis, we instead selected only a few of the variables of interest at a time.
 
-We cleaned the second dataset containing information on Medicaid expansion so that it can be merged with the survey data. This process included removing extraneous column variables and matching the state variable names to the codes used in the PSID data. We then created a dummy variable indicating whether Medicaid expansion was active for the given state and year using the other variables in the dataframe.
+We cleaned the second dataset containing information on Medicaid expansion so it could be merged with the survey data. This process included removing extraneous column variables and matching the state variable names to the codes used in the PSID data. We then created a dummy variable indicating whether Medicaid expansion was active for the given state and year using the other variables in the dataframe. Then, based on this variable, we defined the treatment group of states that expanded Medicaid at some point before 2022. 
 
-We have three outcomes of interest we will look at in order to get a measure of religiosity. Religious attendance, religious affiliation, and donations to religious organizations. Ultimately we will be able to look at how a state passing Medicaid expansion affects those three different outcomes of interest. 
+We cleaned the third dataset by generating a year variable based on if the enrollment was pre- or post-Medicaid expansion and filtered out non-states.
 
-After plotting histograms of income, donations, and attendance it shows that each is right skewed so we will need to log transform donations and attendance in order to use them. We also noticed some extreme values and after consulting the codebook realized many of those extreme values were for NA or didn’t know (DK). One of the extreme values we removed for the income variable was those who lost $999,999 or more since we figured that was most likely an outlier and the purpose of having income in the data is to figure out if they qualified for Medicaid or not. This is important because one of our tentative plans for our econometric analysis is to only include people who qualified for Medicaid before and after the expansion in our dataset.
+Our primary outcome of interest is religious attendance, as it seems to be the most reliable indicator of religiosity. Another potential outcomes in the PSID dataset is religious donations. However, the capacity to donate is a function of both income and religiosity, which could complicate causal inference. We also chose not use to religious affiliation because respondents’ surveyed affiliations may remain constant even if the level of religious activity in their daily lives changes. 
 
-
-## Findings
-
-We find that religious affiliation, attendance at religious events, and donations to religious organizations have declined over time. 
-
-We also find that income and donations to religious organizations as well as income and attendance at religious events have a weak negative correlation.
+## Exploratory Analysis
+Attendance of religious services is highly right-skewed, meaning that a high proportion of the respondents attended none or only one service within the past year, but a smaller group of respondents attended many services. 
+```{r echo=FALSE, out.width = "50%", fig.align = "center"}
+knitr::include_graphics("output/Histogram_Attendance.png")
+```
+The attendance of religious services varies by state. In the map below, we observe that the Southeastern region of the US attends the most number of services, on average, and the West and Northeast attends the least. In the second map, we see that the percentage of respondents regularly attending religious services follows a similar geographic trend and at a similar magnitude. The most religious state attends about 4 times as many services per year on average than the least religious state (Montana, by this metric), and the most religious state is about 4 times as likely to attend religious services regularly than the least religious state.
 
 ```{r echo=FALSE, out.width = "50%", fig.align = "center"}
-knitr::include_graphics("output/attendancehistogram.png")
+knitr::include_graphics("output/Attendance_Map.png")
 ```
 ```{r echo=FALSE, out.width = "50%", fig.align = "center"}
-knitr::include_graphics("output/donationshistogram.png")
+knitr::include_graphics("output/Regular_Attendance_Map.png")
+```
+The next map displays the Medicaid expansion status of each state in 2021. In 2014, only 25 states expanded Medicaid immediately, but now we see that only 12 states remain having not expanded Medicaid (South Dakota and North Carolina have since expanded). The group of states that chose not to expand Medicaid are largely in the Southeast and Midwest. 
+```{r echo=FALSE, out.width = "50%", fig.align = "center"}
+knitr::include_graphics("output/medicaid_expansion_map.png")
 ```
 
+The plot below shows how average attendance in states that expanded Medicaid differed from states that did not expand Medicaid over time relative to 2014. Attendance declined over time for both groups, most noticeably in 2021, influenced by the COVID-19 pandemic. We see that religious attendance was similar in both groups of states before 2014 (although slightly higher in non-expansion states), but because we don't have data for every year, it is hard to make conclusions about changes in slopes. 
+
 ```{r echo=FALSE, out.width = "50%", fig.align = "center"}
-knitr::include_graphics("output/affiliationtime.png")
+knitr::include_graphics("output/Event_Study.png")
 ```
+
+Finally, we observe how Medicaid enrollment has changed in each state between before the Affordable Care Act passed. For this visualization, we log-transformed total Medicaid enrollment in each state, to better be able to compare states with different populations. In general, we see that Medicaid enrollment has increased in the last decade for all states, but some states saw more of an increase in enrollment than others. However, for the purposes of our analysis, the effects of increases in enrollment might not be large enough to be seen in full state outcomes, and changes in Medicaid enrollment may also be due to factors other than whether expanded Medicaid eligibility.
+
 ```{r echo=FALSE, out.width = "50%", fig.align = "center"}
-knitr::include_graphics("output/year_meanincome.png")
-```
-```{r echo=FALSE, out.width = "50%", fig.align = "center"}
-knitr::include_graphics("output/year_meanattendance.png")
+knitr::include_graphics("output/Medicaid percent changes.png")
 ```
 
 
 
-```{r echo=FALSE, out.width = "50%", fig.align = "center"}
-knitr::include_graphics("output/incomeattendance.png")
-```
-```{r echo=FALSE, out.width = "50%", fig.align = "center"}
-knitr::include_graphics("output/incomedonations.png")
-```
 
+```
 
