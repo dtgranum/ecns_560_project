@@ -1,9 +1,4 @@
-pacman::p_load(tidyverse, estimatr, broom, summarytools, fixest, binsreg)
-library(usmap)
-library(ggplot2)
-library(RColorBrewer)
-
-# histogram
+# create histogram
 ggplot(attendance_merged, aes(attendance)) +
   geom_histogram(color = "#000000", fill = "#1f78b4") +
   geom_vline(aes(xintercept = mean(attendance)), color = "#000000", size = 1.25) +

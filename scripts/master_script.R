@@ -1,8 +1,6 @@
 pacman::p_load(tidyverse, estimatr, broom, summarytools, fixest, binsreg)
 library(usmap)
 library(ggplot2)
-library(sf)
-library(tmap)
 library(RColorBrewer)
 library(tidyverse)
 library(stringr)
