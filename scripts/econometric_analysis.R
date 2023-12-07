@@ -1,10 +1,26 @@
-ols_fe_attendance <- feols(attendance ~ treatpost | year + state, data = attendance_merged)
-etable(ols_fe_attendance, ols_fe_attendance)
+# attendance regression with all income levels
+ols_attendance <- feols(attendance ~ treatpost | year + state, data = attendance_merged)
+table1 <- tbl_regression(ols_attendance)
+table1 <- table1 |>
+  modify_header(label = "**Variable**") |>
+  as_gt() |>
+  gt::tab_header(title = "Regression 1. Attendance Regression Model")
 
-# other regressions to try: income subset, log attendance, reg_attend as outcome variable, political & population control variables
+# attendance regression with restricted income levels
 attendance_merged_eligible <- attendance_merged |>
-  filter(income < 21000)
+  filter(income < 40000)
+ols_eligible <- feols(attendance ~ treatpost | year + state, data = attendance_merged_eligible)
+table2 <- tbl_regression(ols_eligible)
+table2 <- table2 |>
+  modify_header(label = "**Variable**") |>
+  as_gt() |>
+  gt::tab_header(title = "Regression 2. Low-Income Attendance Regression Model")
 
-ols <- feols(attendance ~ treatpost | year + state, data = attendance_merged_eligible)
-etable(ols, ols_fe_attendance)
+# regular attendance regression with all income levels
+ols_reg_attendance <- feols(reg_attend ~ treatpost | year + state, data = attendance_merged)
+table3 <- tbl_regression(ols_reg_attendance)
+table3 <- table3 |>
+  modify_header(label = "**Variable**") |>
+  as_gt() |>
+  gt::tab_header(title = "Regression 3. Regular Attendance Regression Model")
 

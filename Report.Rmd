@@ -39,36 +39,75 @@ Our primary outcome of interest is religious attendance, as it seems to be the m
 
 ## Exploratory Analysis
 Attendance of religious services is highly right-skewed, meaning that a high proportion of the respondents attended none or only one service within the past year, but a smaller group of respondents attended many services. 
-```{r echo=FALSE, out.width = "50%", fig.align = "center"}
+```{r echo=FALSE, out.width = "75%", fig.align = "center"}
 knitr::include_graphics("output/Histogram_Attendance.png")
 ```
 The attendance of religious services varies by state. In the map below, we observe that the Southeastern region of the US attends the most number of services, on average, and the West and Northeast attends the least. In the second map, we see that the percentage of respondents regularly attending religious services follows a similar geographic trend and at a similar magnitude. The most religious state attends about 4 times as many services per year on average than the least religious state (Montana, by this metric), and the most religious state is about 4 times as likely to attend religious services regularly than the least religious state.
 
-```{r echo=FALSE, out.width = "50%", fig.align = "center"}
+```{r echo=FALSE, out.width = "75%", fig.align = "center"}
 knitr::include_graphics("output/Attendance_Map.png")
 ```
-```{r echo=FALSE, out.width = "50%", fig.align = "center"}
+```{r echo=FALSE, out.width = "75%", fig.align = "center"}
 knitr::include_graphics("output/Regular_Attendance_Map.png")
 ```
 The next map displays the Medicaid expansion status of each state in 2021. In 2014, only 25 states expanded Medicaid immediately, but now we see that only 12 states remain having not expanded Medicaid (South Dakota and North Carolina have since expanded). The group of states that chose not to expand Medicaid are largely in the Southeast and Midwest. 
-```{r echo=FALSE, out.width = "50%", fig.align = "center"}
+```{r echo=FALSE, out.width = "75%", fig.align = "center"}
 knitr::include_graphics("output/medicaid_expansion_map.png")
 ```
 
 The plot below shows how average attendance in states that expanded Medicaid differed from states that did not expand Medicaid over time relative to 2014. Attendance declined over time for both groups, most noticeably in 2021, influenced by the COVID-19 pandemic. We see that religious attendance was similar in both groups of states before 2014 (although slightly higher in non-expansion states), but because we don't have data for every year, it is hard to make conclusions about changes in slopes. 
 
-```{r echo=FALSE, out.width = "50%", fig.align = "center"}
+```{r echo=FALSE, out.width = "75%", fig.align = "center"}
 knitr::include_graphics("output/Event_Study.png")
 ```
 
 Finally, we observe how Medicaid enrollment has changed in each state between before the Affordable Care Act passed. For this visualization, we log-transformed total Medicaid enrollment in each state, to better be able to compare states with different populations. In general, we see that Medicaid enrollment has increased in the last decade for all states, but some states saw more of an increase in enrollment than others. However, for the purposes of our analysis, the effects of increases in enrollment might not be large enough to be seen in full state outcomes, and changes in Medicaid enrollment may also be due to factors other than whether expanded Medicaid eligibility.
 
-```{r echo=FALSE, out.width = "50%", fig.align = "center"}
+```{r echo=FALSE, out.width = "75%", fig.align = "center"}
 knitr::include_graphics("output/Medicaid percent changes.png")
 ```
 
+## Econometric Analysis
+### Motivation
+Our research question is causal because we use regression analysis as a first step towards understanding how an exogenous shock in a person's well-being is associated with religious behaviors. Religion can be an influential factor in culture, politics, and daily life, so understanding what makes people change their religious behaviors and why is important to know. This question is not descriptive or predictive because our goal is not only to seek to describe or predict how religiosity changes given a change in health insurance coverage. That health insurance coverage is meant to signify a change in well-being that could potentially cause changes in religious behavior, which is the broader insight we are considering. 
 
+### Methods
+Write down 1-3 regression models that you could use to shed light on one or more of your research questions using your available data you have. No need to get fancy – a simple OLS or fixed effects regression is fine. I won’t prohibit you from trying something else you’ve learned in econometrics, but start with something simple. Explain all notation in your regressions and why they are appropriate to your situation.
 
+Difference-in-differences regression model (two-way fixed effect model):
+$attendance_{y,s} = α + β*(medicaidexpansion*post) + γ_y + λ_s + εy$
 
+$attendance$ indicates the number of times in the past year the respondent has attended a religious services. Post indicates the time period after a state adopted Medicaid expansion. $medicaidexpansion$ indicates whether a state adopted Medicaid expansion during the data time frame. 
+$β$ times 100 can be interpreted as the estimated percent change in religious attendance associated with expanding Medicaid. $α$ is a constant, $λ_s$ are the state fixed effect variables, $γ_y$ are year fixed effect variables, and $ε$ is the error term.
+
+We can repeat the same model structure using percentage of respondents that regularly attend religious services as an outcome variable. In this model, $β$ times 100 can be interpreted as the estimated percent change in the percentage of regular religious service attenders associated with expanding Medicaid. 
+
+Another regression alternative is to restrict the regression to households to those earning below the income eligibility requirement for Medicaid expansion. This depends on the federal poverty level and size of family, so we will choose to restrict the data to only households earning less than $40,000 per year as an approximation. 
+
+### Results & Interpretation
+Interpret your results. Put the coefficient(s) into complete sentences of English to explain what the regression told you. Explain what they mean. What new facts do we learn about the world from the relationships (or lack of relationships) you find? Since your research question is only descriptive, be very careful not to claim or even imply any causal interpretation of your results.
+Interpret your results through the lens of causal inference. How plausible would it be to interpret your results causally? Describe the limitations to doing so. What are some likely sources of bias, in what direction are they likely to push, and how concerned should we be about them? It’s often helpful to describe what the ideal experiment would be, and then compare your situation to that experiment.
+
+```{r echo=FALSE, out.width = "75%", fig.align = "center"}
+knitr::include_graphics("output/Regression_1.png")
 ```
+
+```{r echo=FALSE, out.width = "75%", fig.align = "center"}
+knitr::include_graphics("output/Regression_2.png")
+```
+
+```{r echo=FALSE, out.width = "75%", fig.align = "center"}
+knitr::include_graphics("output/Regression_3.png")
+```
+Our analysis is most likely not causal. While we implemented a natural experiment there are several flaws such as a lack of control variables, it is unclear what mechanisms are at work, and using a country-wide analysis. For example, political affiliation is an omitted variable that is positively correlated with religious attendance and negatively correlated with Medicaid expansion being passed so this would cause a downward bias. There is a lot of measurement error in survey data which would cause a downward bias.
+
+Say a few words about how you might proceed from here, if you were going to more convincingly answer your causal research question.
+
+Proceeding from here we would do more work into investigating if Medicaid expansion is a good natural experiment to implement through an event study.
+We would also look at a more specific region of the country rather than the whole country since that causes a lot of noise in the data. For example we would compare Wisconsin-Minnesota or Alabama-Louisiana.
+Proceeding from here we would change our treatment and comparison groups so that the treatment group are people who now qualify for Medicaid expansion while the comparison group are people who would have otherwise qualified for Medicaid expansion but live in a state that did not accept Medicaid expansion. We also see that when we restrict the sample to just families with lower income levels our estimate becomes larger which indicates to us that this would be a good approach to take.
+
+
+
+
 
